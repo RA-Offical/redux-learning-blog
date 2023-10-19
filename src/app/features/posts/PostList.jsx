@@ -1,13 +1,22 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { getPosts } from "./postSlice";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPosts, getPosts } from "./postSlice";
 import { Link } from "react-router-dom";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
 
 const PostList = () => {
+	const dispatch = useDispatch();
+	const postStatus = useSelector((store) => state.posts.status);
 	const posts = useSelector(getPosts);
+
+	//calling useEffect to fetch posts when component mount
+	useEffect(() => {
+		if (postStatus === "idle") {
+			dispatch(fetchPosts());
+		}
+	}, []);
 
 	const orderedPosts = posts
 		.slice()

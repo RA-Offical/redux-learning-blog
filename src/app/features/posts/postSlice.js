@@ -1,34 +1,18 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
+import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = [
-	{
-		id: "1",
-		title: "Hello",
-		content: "Hello!",
-		date: sub(new Date(), { minutes: 10 }).toISOString(),
-		reactions: {
-			thumbsUp: 0,
-			hooray: 0,
-			heart: 0,
-			rocket: 0,
-			eyes: 0,
-		},
-	},
-	{
-		id: "2",
-		title: "this keyword in javascript",
-		content: "Understanding this keyword is very important in javascript",
-		date: sub(new Date(), { minutes: 5 }).toISOString(),
-		reactions: {
-			thumbsUp: 0,
-			hooray: 0,
-			heart: 0,
-			rocket: 0,
-			eyes: 0,
-		},
-	},
-];
+const POST_URL = "https://jsonplaceholder.typicode.com/posts";
+
+export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
+	const response = await axios.get(POST_URL);
+	return response.data;
+});
+
+const initialState = {
+	posts: [],
+	status: "idle", //"idle" | "loading" | "succeeded" | "failed",
+	error: null, //string | null,
+};
 
 const postSlice = createSlice({
 	name: "posts",
@@ -36,7 +20,7 @@ const postSlice = createSlice({
 	reducers: {
 		addNewPost: {
 			reducer: (state, action) => {
-				state.push(action.payload);
+				state.posts.push(action.payload);
 			},
 			prepare: (title, content, userId) => {
 				return {
@@ -60,7 +44,7 @@ const postSlice = createSlice({
 		editPost: (state, action) => {
 			const { id, title, content } = action.payload;
 
-			const existingPost = state.find((post) => post.id === id);
+			const existingPost = state.posts.find((post) => post.id === id);
 
 			if (existingPost) {
 				existingPost.title = title;
@@ -70,15 +54,15 @@ const postSlice = createSlice({
 		addReaction: (state, action) => {
 			const { postId, reaction } = action.payload;
 
-			const post = state.find((post) => post.id === postId);
+			const post = state.posts.find((post) => post.id === postId);
 			if (post) post.reactions[reaction] += 1;
 		},
 	},
 });
 
-export const getPosts = (store) => store.posts;
+export const getPosts = (store) => store.posts.posts;
 export const findPostById = (store, postId) => {
-	return store.posts.find((post) => post.id === postId);
+	return store.posts.posts.find((post) => post.id === postId);
 };
 export const { addNewPost, editPost, addReaction } = postSlice.actions;
 
