@@ -9,7 +9,7 @@ export const EditPostForm = () => {
 	const post = useSelector((store) => findPostById(store, postId));
 
 	const [title, setTitle] = useState(post.title);
-	const [content, setContent] = useState(post.content);
+	const [content, setContent] = useState(post.body);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();

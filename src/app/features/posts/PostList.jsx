@@ -5,10 +5,13 @@ import { Link } from "react-router-dom";
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
+import PostExcerpt from "./PostExcerpt";
+import { Spinner } from "../../../components/Spinner";
 
 const PostList = () => {
 	const dispatch = useDispatch();
-	const postStatus = useSelector((store) => state.posts.status);
+	const postStatus = useSelector((store) => store.posts.status);
+	const postError = useSelector((store) => store.posts.error);
 	const posts = useSelector(getPosts);
 
 	//calling useEffect to fetch posts when component mount
@@ -16,40 +19,27 @@ const PostList = () => {
 		if (postStatus === "idle") {
 			dispatch(fetchPosts());
 		}
-	}, []);
+	}, [postStatus, dispatch]);
 
-	const orderedPosts = posts
-		.slice()
-		.sort((a, b) => b.date.localeCompare(a.date));
+	let content = "";
+	if (postStatus === "loading") {
+		content = <Spinner />;
+	} else if (postStatus === "succeeded") {
+		const orderedPosts = posts
+			.slice()
+			.sort((a, b) => b.date.localeCompare(a.date));
 
-	const renderedPosts = orderedPosts.map((post) => {
-		return (
-			<article className="post-excerpt" key={post.id}>
-				<h3>{post.title}</h3>
-				<p className="post-content">{post.content.substring(0, 100)}</p>
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-					}}
-				>
-					<PostAuthor userId={post.userId} />
-					<TimeAgo timestamp={post.date} />
-				</div>
-				<Link to={`/posts/${post.id}`} className="button muted-button">
-					View Post
-				</Link>
-
-				<ReactionButtons post={post} />
-			</article>
-		);
-	});
+		content = orderedPosts.map((post) => {
+			return <PostExcerpt key={post.id} post={post} />;
+		});
+	} else if (postStatus === "failed") {
+		content = <div>{postError}</div>;
+	}
 
 	return (
 		<section className="posts-list">
 			<h2>Posts</h2>
-			{renderedPosts}
+			{content}
 		</section>
 	);
 };

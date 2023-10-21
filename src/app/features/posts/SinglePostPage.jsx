@@ -23,7 +23,7 @@ const SinglePostPage = () => {
 		<section>
 			<article className="post">
 				<h2>{post.title}</h2>
-				<p className="post-content">{post.content}</p>
+				<p className="post-content">{post.body}</p>
 				<div
 					style={{
 						display: "flex",
