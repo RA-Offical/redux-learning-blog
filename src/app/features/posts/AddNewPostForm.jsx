@@ -10,7 +10,6 @@ const AddNewPostForm = () => {
 	const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
 	const users = useSelector(getUsers);
-
 	const dispatch = useDispatch();
 
 	const canSave =

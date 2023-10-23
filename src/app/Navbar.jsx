@@ -1,7 +1,9 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
+	const dispatch = useDispatch();
+	const count = useSelector((store) => store.posts.count);
 	return (
 		<nav>
 			<section>
@@ -10,6 +12,7 @@ export const Navbar = () => {
 				<div className="navContent">
 					<div className="navLinks">
 						<Link to="/">Posts</Link>
+						<Link to="/users">Users</Link>
 					</div>
 				</div>
 			</section>
